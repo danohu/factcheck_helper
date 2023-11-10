@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactCheck Helper</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        #submit-btn, #processing-text, #results-table {
+            margin-top: 20px;
+        }
+        #processing-text {
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="text-center">Paste Your Article Here</h2>
+    <textarea id="article-text" class="form-control" rows="10"></textarea>
+    <button id="submit-btn" class="btn btn-primary btn-lg btn-block">Submit for Fact-Checking</button>
+</div>
+<div id="processing-text" class="text-center">Processing...</div>
+<table id="results-table" class="table table-striped" style="display: none;">
+    <thead>
+    <tr>
+        <th>Claim</th>
+        <th>Checked</th>
+        <th>Evidence</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<script>
+    document.getElementById('submit-btn').addEventListener('click', function() {
+        var articleContent = document.getElementById('article-text').value;
+        var processingText = document.getElementById('processing-text');
+        var resultsTable = document.getElementById('results-table');
+        var tableBody = resultsTable.getElementsByTagName('tbody')[0];
+
+        processingText.style.display = 'block';
+        resultsTable.style.display = 'none';  // Hide the table while processing
+
+        fetch('/factcheck', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ article: articleContent })
+        })
+            .then(response => response.json())
+            .then(data => {
+                processingText.style.display = 'none';
+                tableBody.innerHTML = '';  // Clear existing table data
+
+                data.claims.forEach(claim => {
+                    var row = tableBody.insertRow();
+                    row.insertCell(0).innerText = claim;
+                    row.insertCell(1).innerText = '';  // Placeholder for 'Checked'
+                    row.insertCell(2).innerText = '';  // Placeholder for 'Evidence'
+                });
+
+                resultsTable.style.display = 'table';  // Show the table with new data
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                processingText.style.display = 'none';
+            });
+    });
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.5/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
