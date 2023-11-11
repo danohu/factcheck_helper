@@ -17,11 +17,17 @@
             margin-top: 10px;
             display: none;
         }
+        #download-btn {
+            display: none;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="container">
-    <h2 class="text-center">Paste Your Article Here</h2>
+    <h2 class="text-center">Factcheck Helper</h2>
+
+    <h4 class="text-center">Paste Your Article Here</h4>
     <textarea id="article-text" class="form-control" rows="10"></textarea>
     <button id="submit-btn" class="btn btn-primary btn-lg btn-block">Submit for Fact-Checking</button>
 </div>
@@ -36,6 +42,7 @@
     </thead>
     <tbody></tbody>
 </table>
+<button id="download-btn" class="btn btn-success">Download as Spreadsheet</button>
 <script>
     document.getElementById('submit-btn').addEventListener('click', function() {
         var articleContent = document.getElementById('article-text').value;
@@ -61,16 +68,48 @@
                 data.claims.forEach(claim => {
                     var row = tableBody.insertRow();
                     row.insertCell(0).innerText = claim;
-                    row.insertCell(1).innerText = '';  // Placeholder for 'Checked'
-                    row.insertCell(2).innerText = '';  // Placeholder for 'Evidence'
+                    // Add a checkbox to the 'Checked' column
+                    var checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = 'checked-' + claim; // Unique ID for the checkbox
+                    row.insertCell(1).appendChild(checkbox);
+
+                    // Add a textbox to the 'Evidence' column
+                    var textbox = document.createElement('input');
+                    textbox.type = 'text';
+                    textbox.id = 'evidence-' + claim; // Unique ID for the textbox
+                    row.insertCell(2).appendChild(textbox);
                 });
 
                 resultsTable.style.display = 'table';  // Show the table with new data
+                if (data.claims && data.claims.length > 0) {
+                    document.getElementById('download-btn').style.display = 'block';
+                } else {
+                    document.getElementById('download-btn').style.display = 'none';
+                }
             })
             .catch((error) => {
                 console.error('Error:', error);
                 processingText.style.display = 'none';
             });
+    });
+    document.getElementById('download-btn').addEventListener('click', function() {
+        var table = document.getElementById('results-table');
+        var rows = table.getElementsByTagName('tr');
+
+        for (var i = 1; i < rows.length; i++) {  // Start from 1 to skip the header row
+            var row = rows[i];
+            var checkbox = row.cells[1].getElementsByTagName('input')[0];
+            var textbox = row.cells[2].getElementsByTagName('input')[0];
+
+            // Update the cell with the state of the checkbox and content of the textbox
+            row.cells[1].innerText = checkbox.checked ? "Yes" : "No";
+            row.cells[2].innerText = textbox.value;
+        }
+
+        // Generate and download the Excel file
+        var workbook = XLSX.utils.table_to_book(table);
+        XLSX.writeFile(workbook, 'FactCheckResults.xlsx');
     });
 </script>
 
