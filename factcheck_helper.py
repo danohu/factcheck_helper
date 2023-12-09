@@ -37,8 +37,6 @@ class FactCheckRequest(BaseModel):
 @app.get("/")
 async def root():
     return FileResponse('index.html')
-    # content = Path('index.html').read_text()
-    # return HTMLResponse(content=content)
 
 @app.post('/factcheck')
 async def factcheck(request_data: FactCheckRequest):
