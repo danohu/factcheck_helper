@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for factcheck-helper on 2023-11-26T20:58:43+01:00
+# fly.toml app configuration file generated for factcheck-helper-solitary-haze-3111 on 2023-12-09T17:58:29+01:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "factcheck-helper"
+app = "factcheck-helper-solitary-haze-3111"
 primary_region = "otp"
 
 [build]
@@ -19,4 +19,4 @@ primary_region = "otp"
 [[vm]]
   cpu_kind = "shared"
   cpus = 1
-  memory_mb = 512
+  memory_mb = 1024
