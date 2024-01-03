@@ -19,3 +19,10 @@ be patient, it takes a while to generate. When it is finished, you will see the 
 the article
 
 
+### Development Status
+
+TODO:
+- [ ] Option to select different prompts
+- [ ] Support for different backends (llamaindex)
+- [ ] A few minimal tests
+- [ ] first pass with mypy, black, pylint
